@@ -1,0 +1,72 @@
+QMainWindow {
+    background-color: rgb(23,25,28);
+    background: qradialgradient(cx:0, cy:0, radius: 3,
+    fx:1, fy:1, stop:0.1 rgb(24,26,29), stop:0.5 rgba(35, 35, 38, 0.06), stop:1 rgba(35,36, 38, 0.1) );
+    transition: background-color 0.4s ease;
+}
+
+#Buttons {
+    background-color: rgb(188, 210, 241);
+    border-radius: 10%;
+    background: qradialgradient(cx:1, cy:1, radius: 1.5,
+    fx:1, fy:0, stop:0.1 rgb(22,60,86), stop:0.5 rgb(14, 42, 68), stop:1 rgba(242,252,255, 0.05) );
+}
+
+#operationsWidget {
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 1, y2: 0,
+    stop: 0 rgb(22,60,86), stop: 1 rgb(14, 42, 68));
+    width: 100px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px outset rgb(20, 57, 84);
+}
+
+#process {
+
+}
+
+#equalLabelCss {
+    color: white;
+    font-family: "Jura";
+    font-size: 30px;
+}
+
+#processLabelCss {
+color: rgba(242, 252, 255, 0.5);
+font-family: "Jura";
+font-size: 13px;
+}
+
+QPushButton {
+    width: 10px;
+    height: 50px;
+
+    background-color: rga(185,225,249, 0.5);
+
+    border: 1px outset rgb(20, 57, 84);
+    border-radius: 5px;
+    color: rgba(242, 252, 255, 0.7);
+    font-family: "Jura";
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 rgb(22,60,86), stop: 1 rgb(14, 42, 68));
+    transform: translateY(-5px);
+}
+
+QPushButton:hover {
+        opacity:  1;
+}
+
+#switchWid {
+    background-color: rgb(27, 106, 152);
+    border-radius: 10px;
+    border: 1px solid rgb(24, 64, 90);
+}
+
+#switchCirc {
+    background-color: rgb(0,54,97);
+    border-radius: 10px;
+    border: 1px solid rgb(24, 64, 90);
+}
