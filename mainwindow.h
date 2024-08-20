@@ -52,6 +52,7 @@ public:
     ~MainWindow();
 
 private:
+    bool divideByZero;
     QWidget *buttons = new QWidget(this);
     QWidget *screenWidget = new QWidget(this);
 

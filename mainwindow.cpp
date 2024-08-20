@@ -94,7 +94,6 @@ MainWindow::MainWindow(QWidget *parent)
     //checks
     buttonDivision->setCheckable(true);
     buttonMult->setCheckable(true);
-    // buttonAC->      setCheckable(true);
     buttonPercent->setCheckable(true);
 
     buttonStates.insert("buttonZeroObj", zeroState);
@@ -105,7 +104,8 @@ MainWindow::MainWindow(QWidget *parent)
     equalStatesMap.insert("buttonPlusObj", addition);
 
     expression.append("0");
-    //style
+
+    //Style
     QStateMachine *styleMachine = new QStateMachine();
 
     QState *whiteState = new QState();
@@ -134,6 +134,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {}
 
+//themes (dark, light)
 void MainWindow::onSwitchToDark()
 {
     whiteStyleFile.close();
@@ -151,11 +152,17 @@ void MainWindow::onSwitchToWhite()
 //BACKEND
 double MainWindow::engine(double first, double second, operatorStates currentState)
 {
+    if (currentState == division)
+    {
+        (second == 0) ? divideByZero = true : divideByZero = false;
+    }
+
     static std::map<operatorStates, std::function<double(double, double)>> operations
         = {{division, [&](double a, double b) { return (b != 0) ? a / b : 0; }},
            {multiply, [&](double a, double b) { return a * b; }},
            {subtraction, [&](double a, double b) { return a - b; }},
-           {addition, [&](double a, double b) { return a + b; }}};
+           {addition, [&](double a, double b) { return a + b; }}
+        };
 
     double insideResult = 0.0;
     if (operations.find(currentState) != operations.end()) {
@@ -163,6 +170,9 @@ double MainWindow::engine(double first, double second, operatorStates currentSta
     } else {
         qDebug() << "sad";
     }
+
+
+
     return insideResult;
 }
 
@@ -189,6 +199,8 @@ void MainWindow::computeLocalValue(bool &beforeThereWasMultOrDiv,
 
 QVariant MainWindow::backEnd(QPushButton *currentSender, States state)
 {
+    if (divideByZero == true) state = ACState;
+
     static int currentInd{0};
 
     static operatorStates beforeOperatorMultOrDivState{};
@@ -300,8 +312,7 @@ QVariant MainWindow::backEnd(QPushButton *currentSender, States state)
         return result;
     }
     case percentState: {
-        if (currentInd == 0)
-        {
+        if (currentInd == 0) {
             double result = expression[currentInd].toDouble();
             return result;
         }
@@ -310,9 +321,8 @@ QVariant MainWindow::backEnd(QPushButton *currentSender, States state)
         double currentPercentNum{(beforeNum * currentNum) / 100};
 
         expression[currentInd] = QString::number(currentPercentNum);
-        currentValueStr += "%";
 
-        return currentValueStr;
+        return expression[currentInd];
     }
     }
 }
@@ -330,6 +340,16 @@ void MainWindow::render(QVariant result, States currentState, QPushButton *click
 {
     static bool beforeWasPoint{};
     static QString processText;
+
+    if (divideByZero == true)
+    {
+        divideByZero = false;
+        equalLabel->clear();
+        processText = "";
+        processLabel->setText("not defined");
+        return;
+    }
+
     switch (currentState) {
     case numState: {
         double resultValue = result.toDouble();
@@ -347,11 +367,14 @@ void MainWindow::render(QVariant result, States currentState, QPushButton *click
             return;
         }
         double resultValue = result.toDouble();
-        if (equalLabel->text() == "0") return;
+        if (equalLabel->text() == "0")
+            return;
 
         equalLabel->setText(QString::number(resultValue, 'g', 15));
-        if (processText == "") processLabel->setText(QString::number(resultValue, 'g', 15));
-        else processLabel->setText(processText + "0");
+        if (processText == "")
+            processLabel->setText(QString::number(resultValue, 'g', 15));
+        else
+            processLabel->setText(processText + "0");
         break;
     }
     case pointState: {
@@ -386,8 +409,10 @@ void MainWindow::render(QVariant result, States currentState, QPushButton *click
     case reverseState: {
         double resultValue = result.toDouble();
         equalLabel->setText(QString::number(resultValue, 'g', 15));
-        if (resultValue < 0.0) processLabel->setText(processText + '(' + QString::number(resultValue, 'g', 15) + ')');
-        else processLabel->setText(processText + QString::number(resultValue, 'g', 15));
+        if (resultValue < 0.0)
+            processLabel->setText(processText + '(' + QString::number(resultValue, 'g', 15) + ')');
+        else
+            processLabel->setText(processText + QString::number(resultValue, 'g', 15));
         break;
     }
     case percentState: {
@@ -402,7 +427,8 @@ void MainWindow::render(QVariant result, States currentState, QPushButton *click
     case EqualState: {
         double resultValue = result.toDouble();
         equalLabel->setText(QString::number(resultValue));
-        processLabel->clear();
+        processLabel->setText(QString::number(resultValue));
+        // processText = QString::number(resultValue, 'g', 15);
         break;
     }
     }
